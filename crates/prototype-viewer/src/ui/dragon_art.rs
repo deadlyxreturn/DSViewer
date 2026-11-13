@@ -347,8 +347,8 @@ pub fn outlined_text(painter: &Painter, center: Pos2, text: &str, size: f32, col
 /// bright gold ring and an orange glow outside.
 pub fn gold_rim(painter: &Painter, rect: Rect, radius: f32) {
     painter.rect_stroke(rect.expand(2.0), radius + 2.0, Stroke::new(7.0, Color32::from_rgba_unmultiplied(255, 58, 134, 40)), StrokeKind::Outside);
-    painter.rect_stroke(rect, radius, Stroke::new(3.0, Color32::from_rgb(110, 46, 4)), StrokeKind::Outside);
-    painter.rect_stroke(rect, radius, Stroke::new(2.2, Color32::from_rgb(240, 160, 30)), StrokeKind::Inside);
+    painter.rect_stroke(rect, radius, Stroke::new(3.0, Color32::from_rgb(92, 12, 44)), StrokeKind::Outside);
+    painter.rect_stroke(rect, radius, Stroke::new(2.2, Color32::from_rgb(240, 168, 118)), StrokeKind::Inside);
     painter.rect_stroke(
         rect.shrink(2.2),
         radius - 2.2,

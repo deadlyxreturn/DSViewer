@@ -1998,16 +1998,16 @@ pub(crate) fn moon_glass(painter: &egui::Painter, p: &Palette, rect: egui::Rect,
     }
     let stops = if active {
         [
-            Color32::from_rgb(255, 236, 140),
-            Color32::from_rgb(255, 170, 30),
-            Color32::from_rgb(214, 37, 108),
-            Color32::from_rgb(255, 67, 167),
+            Color32::from_rgb(255, 222, 236),
+            Color32::from_rgb(255, 120, 172),
+            Color32::from_rgb(196, 26, 92),
+            Color32::from_rgb(255, 86, 158),
         ]
     } else if hot {
         [
-            Color32::from_rgba_unmultiplied(170, 120, 90, 235),
-            Color32::from_rgba_unmultiplied(110, 60, 40, 235),
-            Color32::from_rgba_unmultiplied(50, 24, 30, 240),
+            Color32::from_rgba_unmultiplied(160, 80, 128, 235),
+            Color32::from_rgba_unmultiplied(98, 36, 76, 235),
+            Color32::from_rgba_unmultiplied(44, 14, 36, 240),
             Color32::from_rgba_unmultiplied(120, 60, 30, 235),
         ]
     } else {
@@ -2107,13 +2107,13 @@ pub(crate) fn moon_window_rim(painter: &egui::Painter, p: &Palette, rect: egui::
     // a few flares of light along it
     painter.rect_stroke(rect.expand(2.0), radius + 2.0, Stroke::new(10.0, Color32::from_rgba_unmultiplied(255, 49, 131, 46)), egui::StrokeKind::Outside);
     super::dragon_art::gold_rim(painter, rect.shrink(1.5), radius);
-    painter.rect_stroke(rect.shrink(1.0), radius, Stroke::new(1.0, Color32::from_rgb(255, 200, 90)), egui::StrokeKind::Inside);
+    painter.rect_stroke(rect.shrink(1.0), radius, Stroke::new(1.0, Color32::from_rgb(255, 206, 170)), egui::StrokeKind::Inside);
     for (x, y) in [(0.3, 0.0), (0.62, 0.0), (0.45, 1.0), (0.8, 1.0)] {
         // a streak of light along the rim: a bright core, a soft halo
         let at = egui::pos2(rect.left() + rect.width() * x, rect.top() + rect.height() * y + if y > 0.5 { -1.0 } else { 1.0 });
         let streak = egui::Rect::from_center_size(at, egui::vec2(rect.width() * 0.07, 3.0));
-        gradient_rect(painter, streak, 1.5, Color32::from_rgb(255, 245, 210), Color32::from_rgb(255, 190, 80));
-        super::dragon_art::glow(painter, at, 14.0, Color32::from_rgb(255, 170, 60), 0.6);
+        gradient_rect(painter, streak, 1.5, Color32::from_rgb(255, 236, 244), Color32::from_rgb(255, 120, 176));
+        super::dragon_art::glow(painter, at, 14.0, Color32::from_rgb(255, 92, 160), 0.6);
     }
 }
 
@@ -2128,14 +2128,14 @@ pub(super) fn glass_pill(painter: &egui::Painter, p: &Palette, rect: egui::Rect,
     // DS Viewer: smoky glass bevels; the chosen one blazing orange
     if selected {
         painter.rect_filled(rect.expand(4.0), radius + 4.0, Color32::from_rgba_unmultiplied(255, 54, 132, if hot { 70 } else { 46 }));
-        painter.rect_filled(rect.expand(1.5), radius + 1.5, Color32::from_rgb(120, 40, 0));
+        painter.rect_filled(rect.expand(1.5), radius + 1.5, Color32::from_rgb(110, 14, 52));
         jewel_glass(painter, rect, radius, [
-            Color32::from_rgb(255, 236, 140),
-            Color32::from_rgb(255, 170, 30),
-            Color32::from_rgb(214, 37, 108),
-            Color32::from_rgb(255, 67, 167),
+            Color32::from_rgb(255, 222, 236),
+            Color32::from_rgb(255, 120, 172),
+            Color32::from_rgb(196, 26, 92),
+            Color32::from_rgb(255, 86, 158),
         ]);
-        painter.rect_stroke(rect, radius, Stroke::new(1.3, Color32::from_rgb(255, 240, 180)), egui::StrokeKind::Inside);
+        painter.rect_stroke(rect, radius, Stroke::new(1.3, Color32::from_rgb(255, 226, 238)), egui::StrokeKind::Inside);
         return Color32::WHITE;
     }
     // a dark jewel: deep glass in a gold rim, glowing orange under the pointer
@@ -2271,15 +2271,15 @@ pub fn paint_slider_knob(ui: &egui::Ui, p: &Palette, resp: &egui::Response, frac
 /// up to `x` with a glowing yellow-to-orange bar.
 pub(crate) fn dragon_rail(painter: &egui::Painter, rail: egui::Rect, x: f32) {
     let r = rail.height() * 0.5;
-    painter.rect_filled(rail, r, Color32::from_rgb(11, 16, 30));
-    painter.rect_stroke(rail, r, Stroke::new(1.0, Color32::from_rgba_unmultiplied(200, 210, 242, 110)), egui::StrokeKind::Outside);
+    painter.rect_filled(rail, r, Color32::from_rgb(28, 8, 24));
+    painter.rect_stroke(rail, r, Stroke::new(1.0, Color32::from_rgba_unmultiplied(242, 176, 206, 110)), egui::StrokeKind::Outside);
     let fill = egui::Rect::from_min_max(rail.min, egui::pos2(x.clamp(rail.left(), rail.right()), rail.bottom()));
     if fill.width() > 1.0 {
         painter.rect_filled(fill.expand(2.0), r + 2.0, Color32::from_rgba_unmultiplied(255, 48, 130, 50));
         let upper = egui::Rect::from_min_max(fill.min, egui::pos2(fill.right(), fill.center().y));
         let lower = egui::Rect::from_min_max(egui::pos2(fill.left(), fill.center().y), fill.max);
-        gradient_rect(painter, upper, 0.0, Color32::from_rgb(255, 248, 149), Color32::from_rgb(255, 160, 20));
-        gradient_rect(painter, lower, 0.0, Color32::from_rgb(255, 48, 130), Color32::from_rgb(255, 185, 77));
+        gradient_rect(painter, upper, 0.0, Color32::from_rgb(255, 214, 230), Color32::from_rgb(255, 96, 158));
+        gradient_rect(painter, lower, 0.0, Color32::from_rgb(214, 30, 100), Color32::from_rgb(255, 176, 120));
     }
 }
 
