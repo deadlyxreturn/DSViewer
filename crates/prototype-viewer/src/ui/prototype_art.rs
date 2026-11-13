@@ -150,6 +150,22 @@ pub fn texture(ctx: &Context, art: Art) -> Option<TextureHandle> {
     Some(t)
 }
 
+/// Where `paint_cover` anchors its crop (0 left/top, 1 right/bottom).
+const ART_ANCHOR: (f32, f32) = (0.5, 0.0);
+
+/// How the login wallpaper lands on `screen`: its scale, and where its
+/// top-left corner lands, so the login pieces can sit where the mockup has
+/// them on the art. `design` is the art's size when there is no wallpaper.
+pub fn art_map(ctx: &egui::Context, screen: egui::Rect, design: egui::Vec2) -> (f32, egui::Pos2) {
+    let size = super::dragon_art::texture(ctx, "background").map_or(design, |t| {
+        let [w, h] = t.size();
+        egui::vec2(w as f32, h as f32)
+    });
+    let k = (screen.width() / size.x).max(screen.height() / size.y);
+    let over = egui::vec2(size.x * k - screen.width(), size.y * k - screen.height());
+    (k * size.x / design.x, screen.min - egui::vec2(over.x * ART_ANCHOR.0, over.y * ART_ANCHOR.1))
+}
+
 /// Paints `t` to cover `rect` (cropped, never stretched), like CSS
 /// `background-size: cover`.
 pub fn paint_cover(painter: &egui::Painter, t: &TextureHandle, rect: egui::Rect, tint: egui::Color32) {
@@ -157,9 +173,10 @@ pub fn paint_cover(painter: &egui::Painter, t: &TextureHandle, rect: egui::Rect,
     let (iw, ih) = (w as f32, h as f32);
     let scale = (rect.width() / iw).max(rect.height() / ih);
     let (sw, sh) = (rect.width() / (iw * scale), rect.height() / (ih * scale));
-    // keep the bear (right third) in view on narrow windows: anchor right
-    let u0 = (1.0 - sw).max(0.0) * 0.75;
-    let v0 = (1.0 - sh).max(0.0) * 0.5;
+    // DS Viewer: the characters stand at both sides, their heads at the
+    // top: keep the middle across and crop only from the bottom
+    let u0 = (1.0 - sw).max(0.0) * ART_ANCHOR.0;
+    let v0 = (1.0 - sh).max(0.0) * ART_ANCHOR.1;
     let uv = egui::Rect::from_min_max(egui::pos2(u0, v0), egui::pos2(u0 + sw, v0 + sh));
     painter.image(t.id(), rect, uv, tint);
 }

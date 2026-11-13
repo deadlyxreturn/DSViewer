@@ -872,10 +872,14 @@ pub fn show(
     // DS Viewer's mockup (1672 × 941): the card at the lower left,
     // 436 wide, its crest overhanging its top edge
     let s = (screen.width() / 1672.0).min(screen.height() / 941.0).clamp(0.82, 1.3);
-    let card_w = (436.0 * s).clamp(400.0, 560.0).min(screen.width() - 24.0);
-    let card_x = if wide { 104.0 * s } else { (screen.width() - card_w) * 0.5 };
+    // DS Viewer: where the mockup (1448 × 1086) has the card on the art,
+    // lower left under the character, so it never covers her face
+    let (k, art) = super::prototype_art::art_map(&ctx, screen, Vec2::new(1448.0, 1086.0));
+    let _ = s;
+    let card_w = (415.0 * k).clamp(400.0, 560.0).min(screen.width() - 24.0);
+    let card_x = if wide { (art.x + 40.0 * k - screen.left()).max(16.0) } else { (screen.width() - card_w) * 0.5 };
     let crest_room = 96.0;
-    let card_y = (359.0 * s)
+    let card_y = (art.y + 375.0 * k - screen.top())
         .min(screen.height() - 470.0)
         .max(44.0 + crest_room);
     let room = (screen.height() - card_y - 26.0).max(190.0);

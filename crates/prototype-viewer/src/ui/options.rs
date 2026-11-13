@@ -1366,10 +1366,19 @@ pub fn show(ctx: &egui::Context, p: &Palette, icons: &Icons, s: &mut Settings, s
     // page switches to its compact layout.
     let default_size = if st.at_login { vec2(880.0, 590.0) } else { vec2(1120.0, 720.0) };
     let min_size = vec2(550.0, 365.0);
+    // DS Viewer: at login, the mockup's size on the art (830 × 545 of 1448 × 1086)
+    let default_size = if st.at_login {
+        let (k, _) = super::prototype_art::art_map(ctx, screen, vec2(1448.0, 1086.0));
+        (vec2(830.0, 545.0) * k).clamp(default_size, vec2(1180.0, 780.0))
+    } else {
+        default_size
+    };
     let size = default_size.min(screen.size() - vec2(40.0, 80.0)).max(min_size);
     let centered = screen.center().x - size.x / 2.0;
     let left = if st.at_login && screen.width() >= 1370.0 {
-        let beside_card = screen.left() + screen.width() * 0.335;
+        // DS Viewer: the mockup's place on the art (1448 × 1086)
+        let (k, art) = super::prototype_art::art_map(ctx, screen, vec2(1448.0, 1086.0));
+        let beside_card = art.x + 465.0 * k;
         beside_card.min(screen.right() - size.x - 14.0)
     } else {
         centered
@@ -1384,7 +1393,7 @@ pub fn show(ctx: &egui::Context, p: &Palette, icons: &Icons, s: &mut Settings, s
         // at login, the mockup's place: beside the card, a quarter down
         pos2(
             left.max(screen.left() + 10.0),
-            screen.top() + if st.at_login { (screen.height() * 0.255).min(screen.height() - size.y - 30.0).max(79.0) } else { 60.0 },
+            screen.top() + if st.at_login { login_top(ctx, screen).min(screen.height() - size.y - 30.0).max(79.0) } else { 60.0 },
         ),
         size,
     )
@@ -2401,3 +2410,10 @@ fn undo_bar(ui: &mut egui::Ui, p: &Palette, s: &mut Settings, st: &mut OptionsUi
 
 #[cfg(test)]
 mod tests;
+
+/// Preferences' top at login: the mockup's, on the art, under the
+/// character's face.
+fn login_top(ctx: &egui::Context, screen: egui::Rect) -> f32 {
+    let (k, art) = super::prototype_art::art_map(ctx, screen, vec2(1448.0, 1086.0));
+    art.y + 262.0 * k - screen.top()
+}

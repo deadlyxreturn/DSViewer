@@ -182,11 +182,14 @@ pub(super) fn card_ornaments(ctx: &egui::Context, card: Rect) {
     }
     // the skin's `wordmark` large at the top of the screen
     if let Some(t) = dragon_art::texture(ctx, "wordmark") {
+        // where the mockup (1448 × 1086) has it on the art: between the two
+        // characters, over their shoulders
         let screen = ctx.content_rect();
-        let width = (screen.width() * 0.33).min(620.0);
+        let (k, art) = super::super::prototype_art::art_map(ctx, screen, vec2(1448.0, 1086.0));
+        let width = (440.0 * k).min(screen.width() * 0.4);
         let [w, h] = t.size();
         let rect = Rect::from_center_size(
-            pos2(screen.left() + screen.width() * 0.585, screen.top() + screen.height() * 0.135),
+            pos2(art.x + 848.0 * k, (art.y + 145.0 * k).max(screen.top() + 40.0 + width * 0.18)),
             vec2(width, width * h as f32 / w.max(1) as f32),
         );
         let back = ctx.layer_painter(egui::LayerId::new(egui::Order::Background, egui::Id::new("ds_login_wordmark")));
