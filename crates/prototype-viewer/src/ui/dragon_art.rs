@@ -560,7 +560,8 @@ pub fn animation(ctx: &Context, name: &str) -> Option<Arc<Animation>> {
 
 fn decode_animation(ctx: &Context, name: &str) -> Option<Animation> {
     use image::AnimationDecoder;
-    let bytes = file_bytes(&format!("{name}.gif"))?;
+    // the named GIF, else any GIF at the skin's top level (whatever it is called)
+    let bytes = file_bytes(&format!("{name}.gif")).or_else(any_gif)?;
     let decoder = image::codecs::gif::GifDecoder::new(std::io::Cursor::new(bytes)).ok()?;
     let mut frames = Vec::new();
     let mut delays = Vec::new();
@@ -583,4 +584,25 @@ fn decode_animation(ctx: &Context, name: &str) -> Option<Animation> {
         delays.push(if ms < 20.0 { 0.066 } else { ms / 1000.0 });
     }
     (!frames.is_empty()).then_some(Animation { frames, delays, size })
+}
+
+/// The first GIF at the top of the skin folder, beside the exe or embedded.
+fn any_gif() -> Option<Vec<u8>> {
+    for dir in runtime_dirs() {
+        if let Ok(rd) = std::fs::read_dir(&dir) {
+            let mut gifs: Vec<_> = rd
+                .flatten()
+                .map(|e| e.path())
+                .filter(|p| p.extension().is_some_and(|x| x.eq_ignore_ascii_case("gif")))
+                .collect();
+            gifs.sort();
+            if let Some(bytes) = gifs.first().and_then(|p| std::fs::read(p).ok()) {
+                return Some(bytes);
+            }
+        }
+    }
+    embedded::SKIN_FILES
+        .iter()
+        .find(|(n, _)| !n.contains('/') && n.to_ascii_lowercase().ends_with(".gif"))
+        .map(|(_, b)| b.to_vec())
 }
